@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from .models import Note
-from .serializer import NoteSerializer
+from .serializer import NoteSerializer, UserRegistrationSerializer
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -94,6 +94,17 @@ def logout(request):
 @permission_classes([IsAuthenticated])
 def is_authenticated(request):
     return Response({'authenticated':True})
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register(request):
+    serializer = UserRegistrationSerializer(data = request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.error)
+
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
